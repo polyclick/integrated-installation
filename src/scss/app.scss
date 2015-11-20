@@ -6,5 +6,26 @@ body {
 }
 
 body {
-  background-color: #fff;
+  //background: #000 url('../img/01.gif') repeat;
+  //background-size: 75%;
+}
+
+@font-face {
+  font-family: fakt;
+  src: url('../fonts/FaktPro-Blond.woff');
+}
+
+@font-face {
+  font-family: romana;
+  src: url('../fonts/RomanaBT-Bold.woff');
+}
+
+
+.title {
+  font-family:romana;
+  position: absolute;
+  color: white;
+  font-size: 78px;
+  top:50%;
+  left:50%;
 }
