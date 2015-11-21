@@ -1,3 +1,5 @@
+$highlight: #f53437;
+
 html,
 body {
   margin: 0;
@@ -40,4 +42,72 @@ body {
   top: 0;
   width: 100%;
   z-index: 1000;
+}
+
+@keyframes scale {
+  0% { transform: scale(1.05, 1.05); }
+  100% { transform: scale(0.95, 0.95); }
+}
+
+@keyframes roll {
+  0% { transform: rotate(5deg); }
+  100% { transform: rotate(-5deg); }
+}
+
+@keyframes v-move {
+  0% { transform: translateY(5px); }
+  100% { transform: translateY(-5px); }
+}
+
+.instruction {
+  color: $highlight;
+  font-family: romana;
+  font-size: 35px;
+  left: 15%;
+  position: absolute;
+  top: 15%;
+  z-index: 100;
+
+  svg {
+    display: block;
+    fill: $highlight;
+  }
+
+  .word {
+    left: 0;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) translateX(-50%);
+  }
+
+  &.grab {
+    left: 50%;
+    top: 50%;
+    transform: translateY(-50%) translateX(-50%);
+
+    .wrapper {
+      animation: scale .3s linear infinite alternate;
+    }
+  }
+
+  &.roll {
+    left: 50%;
+    top: 50%;
+    transform: translateY(-50%) translateX(-50%);
+
+    .wrapper {
+      animation: roll .3s linear infinite alternate;
+    }
+  }
+
+  &.v-move {
+    left: 10%;
+    top: 50%;
+    transform: translateY(-50%);
+
+    .wrapper {
+      animation: v-move .3s linear infinite alternate;
+    }
+  }
 }

@@ -9,8 +9,8 @@ import vertexShader from '../shaders/pulse.vert!text'
 import fragmentShader from '../shaders/pulse.frag!text'
 
 export class BounceScene extends InteractionScene {
-  constructor(scene, clock, leapManager) {
-    super(scene, clock, leapManager)
+  constructor($instruction, scene, clock, leapManager) {
+    super($instruction, scene, clock, leapManager)
 
     // name of the scene
     this.name = 'bounce-scene'

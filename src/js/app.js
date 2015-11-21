@@ -38,7 +38,11 @@ class App {
     this.idleTimeout = null
     this.resizeTimeout = null
 
+    this.$title = $('.title')
     this.$blocker = $('.blocker')
+    this.$instructionGrab = $('.instruction.grab')
+    this.$instructionRoll = $('.instruction.roll')
+    this.$instructionVMove = $('.instruction.v-move')
 
     this.init()
     this.logResolutionDetails()
@@ -73,9 +77,9 @@ class App {
 
     // scenes
     this.scenes = [
-      new GrabScene(this.scene, this.clock, this.leapManager),
-      new BounceScene(this.scene, this.clock, this.leapManager),
-      new SpinScene(this.scene, this.clock, this.leapManager)
+      new GrabScene(this.$instructionGrab, this.scene, this.clock, this.leapManager),
+      new BounceScene(this.$instructionVMove, this.scene, this.clock, this.leapManager),
+      new SpinScene(this.$instructionRoll, this.scene, this.clock, this.leapManager)
     ]
 
     // screensaver scene
@@ -152,8 +156,9 @@ class App {
       // keep track of last scene name for next cycle
       this.previousSceneName = this.activeScene.name
 
-      // hide screensaver
+      // hide screensaver & title
       this.screensaver.hide()
+      this.$title.hide()
     }
   }
 
@@ -177,6 +182,7 @@ class App {
       })
 
       this.screensaver.show()
+      this.$title.show()
       this.hideBlocker()
     }
   }
@@ -185,6 +191,7 @@ class App {
     let w = window.innerWidth
     let h = window.innerHeight
     let r = this.gcd(w, h)
+
     console.log(`Resolution changed to: ${w}px x ${h}px (${w / r}:${h / r})`)
   }
 

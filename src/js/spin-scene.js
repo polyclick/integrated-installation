@@ -10,8 +10,8 @@ import vertexShader from '../shaders/circular.vert!text'
 import fragmentShader from '../shaders/circular.frag!text'
 
 export class SpinScene extends InteractionScene {
-  constructor(scene, clock, leapManager) {
-    super(scene, clock, leapManager)
+  constructor($instruction, scene, clock, leapManager) {
+    super($instruction, scene, clock, leapManager)
 
     // contra movement triangle count
     this.CONTRA_AMOUNT = 3

@@ -1,17 +1,24 @@
 'use strict'
 
 import THREE from 'three'
+import TweenMax from 'gsap'
 import _ from 'lodash'
 
 export class InteractionScene {
-  constructor(scene, clock, leapManager) {
+  constructor($instruction, scene, clock, leapManager) {
+    this.$instruction = $instruction
     this.scene = scene
     this.clock = clock
     this.leapManager = leapManager
 
+    this.TEASE_TIMEOUT = 1000
+
     this.name = '-default-'
 
     this.meshes = []
+    this.teaseTimeout
+
+    this.hideInstruction(false)
   }
 
   activate() {
@@ -19,6 +26,8 @@ export class InteractionScene {
     _.each(this.meshes, (mesh) => {
       mesh.visible = true
     })
+
+    this.teaseInstruction()
   }
 
   deactivate() {
@@ -26,6 +35,8 @@ export class InteractionScene {
     _.each(this.meshes, (mesh) => {
       mesh.visible = false
     })
+
+    this.hideInstruction()
   }
 
   animate() {
@@ -64,5 +75,20 @@ export class InteractionScene {
 
     // return reference
     return mesh
+  }
+
+  hideInstruction(animated) {
+    clearTimeout(this.teaseTimeout)
+
+    TweenMax.to(this.$instruction, animated ? 1 : 0, { alpha: 0 })
+  }
+
+  teaseInstruction() {
+    clearTimeout(this.teaseTimeout)
+
+    TweenMax.to(this.$instruction, 0, { alpha: 1 })
+    this.teaseTimeout = setTimeout(() => {
+      TweenMax.to(this.$instruction, 0.3, { alpha: 0 })
+    }, this.TEASE_TIMEOUT)
   }
 }

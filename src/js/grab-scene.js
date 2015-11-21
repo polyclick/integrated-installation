@@ -10,8 +10,8 @@ import vertexShader from '../shaders/horizontal-marching-stripes.vert!text'
 import fragmentShader from '../shaders/horizontal-marching-stripes.frag!text'
 
 export class GrabScene extends InteractionScene {
-  constructor(scene, clock, leapManager) {
-    super(scene, clock, leapManager)
+  constructor($instruction, scene, clock, leapManager) {
+    super($instruction, scene, clock, leapManager)
 
     this.MIN_SCALE = 0.025
     this.MAX_SCALE = 1.00
@@ -51,6 +51,7 @@ export class GrabScene extends InteractionScene {
     this.activeMesh = _.sample(this.meshes)
     this.activeMesh.visible = true
     console.log(this.activeMesh.geometry)
+    this.teaseInstruction()
   }
 
   animate() {
