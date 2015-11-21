@@ -29,7 +29,9 @@ global.paths = {
   // Compiled CSS folder.
   'css': './src/css',
   // Distribution folder.
-  'dist': './dist'
+  'dist': './dist',
+  // Shaders folder.
+  'shaders': './src/shaders/**/*.{frag,vert}'
 };
 
 // Require all tasks in the 'gulp' folder.

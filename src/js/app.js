@@ -2,6 +2,7 @@
 
 import THREE from 'three'
 import TweenMax from 'gsap'
+import Power2 from 'gsap'
 import $ from 'jquery'
 import _ from 'lodash'
 
@@ -10,7 +11,6 @@ import {LeapManager} from './leap-manager.js'
 import {GrabScene} from './grab-scene.js'
 import {BounceScene} from './bounce-scene.js'
 import {SpinScene} from './spin-scene.js'
-import {SliceScene} from './slice-scene.js'
 import {ScreenSaver} from './screen-saver.js'
 
 //
@@ -22,7 +22,7 @@ import {ScreenSaver} from './screen-saver.js'
 
 class App {
   constructor() {
-    this.IDLE_TIMEOUT = 250
+    this.IDLE_TIMEOUT = 1500
 
     this.renderer = null
     this.camera = null
@@ -36,8 +36,12 @@ class App {
     this.previousSceneName = ''
 
     this.idleTimeout = null
+    this.resizeTimeout = null
+
+    this.$blocker = $('.blocker')
 
     this.init()
+    this.logResolutionDetails()
   }
 
   init() {
@@ -45,7 +49,7 @@ class App {
     this.renderer = new THREE.WebGLRenderer({ alpha: false, antialias: true, preserveDrawingBuffer: true })
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize(window.innerWidth, window.innerHeight)
-    //this.renderer.autoClearColor = false;
+    // this.renderer.autoClearColor = false;
     document.body.appendChild(this.renderer.domElement)
 
     // camera
@@ -76,6 +80,10 @@ class App {
 
     // screensaver scene
     this.screensaver = new ScreenSaver(this.scene, this.clock)
+    this.screensaver.show()
+
+    // blocker
+    this.hideBlocker()
 
     // render & animation ticker
     TweenMax.ticker.fps(60)
@@ -83,14 +91,6 @@ class App {
 
     // resize
     window.addEventListener('resize', this.resize.bind(this), false)
-
-    $(window).mousedown(() => {
-      this.handleHandHasEntered()
-    })
-
-    $(window).mouseup(() => {
-      this.handleHandHasLeft()
-    })
   }
 
   tick() {
@@ -110,48 +110,94 @@ class App {
   }
 
   resize() {
+    clearTimeout(this.resizeTimeout)
+
     // update camera
     this.camera.aspect = window.innerWidth / window.innerHeight
     this.camera.updateProjectionMatrix()
 
     // update renderer
     this.renderer.setSize(window.innerWidth, window.innerHeight)
+
+    // resize timeout
+    // automatically reloads page when resizing completes
+    this.resizeTimeout = setTimeout(() => {
+      clearTimeout(this.resizeTimeout)
+      location.reload()
+    }, 1500)
   }
 
   handleHandHasEntered() {
+
+    // clear idle timeout and hide blocker
     clearTimeout(this.idleTimeout)
+    this.hideBlocker()
 
-    // filter list to leave out last scene (no duplicates after each other)
-    let filtered = this.scenes
-    if (this.scenes.length > 1) {
-      filtered = _.filter(this.scenes, (scene) => {
-        return scene.name !== this.previousSceneName
-      })
+    // if screensaver was showing, pick a random scene
+    // else, by hiding the blocker (see above, we are back at the active scene)
+    if (this.screensaver.showing) {
+
+      // filter list to leave out last scene (no duplicates after each other)
+      let filtered = this.scenes
+      if (this.scenes.length > 1) {
+        filtered = _.filter(this.scenes, (scene) => {
+          return scene.name !== this.previousSceneName
+        })
+      }
+
+      // activate scene
+      this.activeScene = _.sample(filtered)
+      this.activeScene.activate()
+
+      // keep track of last scene name for next cycle
+      this.previousSceneName = this.activeScene.name
+
+      // hide screensaver
+      this.screensaver.hide()
     }
-
-    // activate scene
-    this.activeScene = _.sample(filtered)
-    this.activeScene.activate()
-
-    // keep track of last scene name for next cycle
-    this.previousSceneName = this.activeScene.name
-
-    // hide screensaver
-    this.screensaver.hide()
   }
 
   handleHandHasLeft() {
     clearTimeout(this.idleTimeout)
+
+    // start timeout for returning to screensaver
     this.idleTimeout = setTimeout(() => {
+      clearTimeout(this.idleTimeout)
       this.handleHandHasLeftTimeoutReached()
     }, this.IDLE_TIMEOUT)
+
+    // and start fading in the blocker
+    this.fadeInBlocker(this.IDLE_TIMEOUT / 1000)
   }
 
   handleHandHasLeftTimeoutReached() {
     if (this.activeScene) {
+      _.each(this.scenes, (scene) => {
+        scene.deactivate()
+      })
+
       this.screensaver.show()
-      this.activeScene.deactivate()
+      this.hideBlocker()
     }
+  }
+
+  logResolutionDetails() {
+    let w = window.innerWidth
+    let h = window.innerHeight
+    let r = this.gcd(w, h)
+    console.log(`Resolution changed to: ${w}px x ${h}px (${w / r}:${h / r})`)
+  }
+
+  gcd(a, b) {
+    return (b === 0) ? a : this.gcd(b, a % b)
+  }
+
+  hideBlocker() {
+    TweenMax.to(this.$blocker, 0, { alpha: 0 })
+  }
+
+  fadeInBlocker(time) {
+    TweenMax.to(this.$blocker, time, { alpha: 1, ease: Power2.easeIn })
   }
 }
 

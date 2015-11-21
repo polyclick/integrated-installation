@@ -1,6 +1,7 @@
 'use strict'
 
 import THREE from 'three'
+import TweenMax from 'gsap'
 import _ from 'lodash'
 
 import {InteractionScene} from './interaction-scene.js'
@@ -59,12 +60,14 @@ export class SpinScene extends InteractionScene {
 
     // rotate all
     _.each(this.meshes, (mesh) => {
-      mesh.rotation.z = this.leapManager.rollStrength
+      let strength = this.leapManager.rollStrength
+      TweenMax.to(mesh.rotation, 0.25, { z: strength })
     })
 
     // contra rotate other
     _.each(this.contraTriangles, (mesh) => {
-      mesh.rotation.z = -this.leapManager.rollStrength
+      let contraStrength = -this.leapManager.rollStrength
+      TweenMax.to(mesh.rotation, 0.25, { z: contraStrength })
     })
   }
 

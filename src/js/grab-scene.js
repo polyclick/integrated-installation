@@ -1,6 +1,8 @@
 'use strict'
 
 import THREE from 'three'
+import TweenMax from 'gsap'
+import _ from 'lodash'
 
 import {InteractionScene} from './interaction-scene.js'
 
@@ -11,39 +13,63 @@ export class GrabScene extends InteractionScene {
   constructor(scene, clock, leapManager) {
     super(scene, clock, leapManager)
 
-    this.MIN_SCALE = 0.05
+    this.MIN_SCALE = 0.025
     this.MAX_SCALE = 1.00
 
     // name of the scene
     this.name = 'grab-scene'
 
-    // create the mesh for this scene
-    this.mesh = this.createMesh(
-      new THREE.SphereGeometry(200, 32, 32),
-      // new THREE.IcosahedronGeometry(200, 0),
-      // new THREE.IcosahedronGeometry(200, 1),
-      // new THREE.DodecahedronGeometry(200, 0),
-      // new THREE.DodecahedronGeometry(200, 1),
-      // new THREE.OctahedronGeometry(200, 0),
-      // new THREE.OctahedronGeometry(200, 1),
-      {
-        uniforms: null,
-        vertex: vertexShader,
-        fragment: fragmentShader
-      }
-    )
+    // the active mesh
+    this.activeMesh = null
+
+    // orb-like geometries
+    this.geometries = [
+      new THREE.SphereGeometry(250, 32, 32),
+      new THREE.IcosahedronGeometry(250, 0),
+      new THREE.IcosahedronGeometry(250, 1),
+      new THREE.DodecahedronGeometry(250, 0),
+      new THREE.DodecahedronGeometry(250, 1),
+      new THREE.OctahedronGeometry(250, 0),
+      new THREE.OctahedronGeometry(250, 1)
+    ]
+
+    // create meshes
+    _.each(this.geometries, (geometry) => {
+      this.createMesh(
+        geometry,
+        {
+          uniforms: null,
+          vertex: vertexShader,
+          fragment: fragmentShader
+        }
+      )
+    })
+  }
+
+  // override activate for this scene
+  activate() {
+    this.activeMesh = _.sample(this.meshes)
+    this.activeMesh.visible = true
+    console.log(this.activeMesh.geometry)
   }
 
   animate() {
     super.animate()
 
-    let scale = this.MAX_SCALE - (this.leapManager.grabStrength * (this.MAX_SCALE - this.MIN_SCALE))
-    this.mesh.scale.set(scale, scale, scale)
-    this.mesh.rotation.x += 0.005
-    this.mesh.rotation.y += 0.0075
-    this.mesh.rotation.z += 0.005
+    if (this.activeMesh) {
 
-    //if (this.mesh)
-      //this.mesh.scale.set(this.leapManager.grabStrength)
+      // overall scale
+      let scale = this.MAX_SCALE - (this.leapManager.grabStrength * (this.MAX_SCALE - this.MIN_SCALE))
+      TweenMax.to(this.activeMesh.scale, 0.1, {
+        x: scale,
+        y: scale,
+        z: scale
+      })
+
+      // follow hand rotion
+      TweenMax.to(this.activeMesh.rotation, 0.5, {
+        z: this.leapManager.rollStrength
+      })
+    }
   }
 }

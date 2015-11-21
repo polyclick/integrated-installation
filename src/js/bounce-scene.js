@@ -1,6 +1,7 @@
 'use strict'
 
 import THREE from 'three'
+import TweenMax from 'gsap'
 
 import {InteractionScene} from './interaction-scene.js'
 
@@ -26,12 +27,18 @@ export class BounceScene extends InteractionScene {
       }
     )
 
+    // set initial position
     this.mesh.position.z = 100
     this.mesh.rotation.y = Math.PI / 180 * -55
   }
 
   animate() {
     super.animate()
-    this.mesh.material.uniforms.u_mouse.value = -this.leapManager.heightStrength
+
+    // set mouse uniform
+    let strength = -this.leapManager.heightStrength
+    TweenMax.to(this.mesh.material.uniforms.u_mouse, 0.5, {
+      value: strength
+    })
   }
 }

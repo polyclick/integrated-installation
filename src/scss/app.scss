@@ -22,10 +22,22 @@ body {
 
 
 .title {
-  font-family:romana;
-  position: absolute;
-  color: white;
+  color: #fff;
+  font-family: romana;
   font-size: 78px;
-  top:50%;
-  left:50%;
+  right: 5%;
+  position: absolute;
+  top: 50%;
+  white-space: nowrap;
+}
+
+.blocker {
+  background-color: #000;
+  height: 100%;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
 }

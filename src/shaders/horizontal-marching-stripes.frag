@@ -10,7 +10,7 @@ varying vec2 v_uv;
 void main() {
     vec2 st = -1.0 + 2.0 * v_uv;
 
-    float movement = u_time * 10.0;
+    float movement = u_time * 20.0;
 
     float y = sign(sin(st.y * 50.0 + movement));
     vec3 color = vec3(y);

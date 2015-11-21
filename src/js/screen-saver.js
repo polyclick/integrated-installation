@@ -11,7 +11,7 @@ export class ScreenSaver {
     this.scene = scene
     this.clock = clock
 
-    let geometry = new THREE.PlaneGeometry(800, 800)
+    let geometry = new THREE.PlaneGeometry(1000, 1000)
     let material = new THREE.ShaderMaterial({
       uniforms: {
         u_time: { type: 'f', value: 1.0 },
@@ -19,7 +19,7 @@ export class ScreenSaver {
         u_mode: { type: '1i', value: 0 },
         u_amount: { type: 'f', value: 20.0 },
         u_speed: { type: 'f', value: 10.0 },
-        u_mask: { type: '1i', value: 0 },
+        u_mask: { type: '1i', value: 0 }
       },
       vertexShader: vertexShader,
       fragmentShader: fragmentShader
@@ -29,6 +29,7 @@ export class ScreenSaver {
 
     this.modes = [0, 1]
     this.previousMode = null
+    this.showing = false;
 
     this.queueNextMode()
   }
@@ -60,7 +61,7 @@ export class ScreenSaver {
 
     // if rotate was picked, resize sometimes
     let shouldResize = shouldRotate && parseInt(Math.round(Math.random()), 10)
-    let scalefactor = shouldResize ? 0.75 : 1.0
+    let scalefactor = shouldResize ? window.innerHeight / window.innerWidth : 1.0
     this.mesh.scale.set(scalefactor, scalefactor, scalefactor)
 
     // set uniforms
@@ -75,10 +76,12 @@ export class ScreenSaver {
   }
 
   show() {
-    this.mesh.visible = true;
+    this.mesh.visible = true
+    this.showing = true;
   }
 
   hide() {
-    this.mesh.visible = false;
+    this.mesh.visible = false
+    this.showing = false;
   }
 }
