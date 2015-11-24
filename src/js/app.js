@@ -16,12 +16,18 @@ import {ScreenSaver} from './screen-saver.js'
 
 class App {
   constructor() {
+
+    // positioning logic
     this.SHOULD_FILL_SCREEN = true
     this.WIDTH = 1000
     this.HEIGHT = 1000
     this.TOP = 100
     this.LEFT = 100
 
+    // pick a random scene when a hand enters?
+    this.RANDOM_SCENE_ORDER = false
+
+    // time in ms to wait after hand was lost to return to screensaver
     this.IDLE_TIMEOUT = 1000
 
     this.screen = { w: 0, h: 0 }
@@ -36,6 +42,7 @@ class App {
     this.scenes = null
     this.activeScene = null
     this.previousSceneName = ''
+    this.currentSceneIndex = 0
 
     this.idleTimeout = null
     this.resizeTimeout = null
@@ -53,14 +60,9 @@ class App {
   }
 
   init() {
-    // set screen site
-    if (this.SHOULD_FILL_SCREEN) {
-      this.screen.w = window.innerWidth
-      this.screen.h = window.innerHeight
-    } else {
-      this.screen.w = this.WIDTH
-      this.screen.h = this.HEIGHT
-    }
+    // set screen size
+    this.screen.w = this.SHOULD_FILL_SCREEN ? window.innerWidth : this.WIDTH
+    this.screen.h = this.SHOULD_FILL_SCREEN ? window.innerHeight : this.HEIGHT
 
     // container
     this.$container
@@ -166,16 +168,8 @@ class App {
     // else, by hiding the blocker (see above, we are back at the active scene)
     if (this.screensaver.showing) {
 
-      // filter list to leave out last scene (no duplicates after each other)
-      let filtered = this.scenes
-      if (this.scenes.length > 1) {
-        filtered = _.filter(this.scenes, (scene) => {
-          return scene.name !== this.previousSceneName
-        })
-      }
-
-      // activate scene
-      this.activeScene = _.sample(filtered)
+      // get the next scene to activate
+      this.activeScene = this.getNextScene()
       this.activeScene.activate()
 
       // keep track of last scene name for next cycle
@@ -185,6 +179,27 @@ class App {
       this.screensaver.hide()
       this.$title.hide()
     }
+  }
+
+  getNextScene() {
+    if (this.RANDOM_SCENE_ORDER) {
+
+      // filter list to leave out last scene (no duplicates after each other)
+      let filtered = this.scenes
+      if (this.scenes.length > 1) {
+        filtered = _.filter(this.scenes, (scene) => {
+          return scene.name !== this.previousSceneName
+        })
+      }
+
+      // return random
+      return _.sample(filtered)
+
+    }
+
+    // next in line
+    this.currentSceneIndex++
+    return this.scenes[this.currentSceneIndex % this.scenes.length]
   }
 
   handleHandHasLeft() {
