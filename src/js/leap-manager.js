@@ -10,8 +10,9 @@ export class LeapManager {
     this.previousFrame = null
     this.currentFrame = null
     this.grabStrength = 1.0
-    this.jazzStrength = 1.0
-    this.rollStrength = 1.0
+    this.rollStrength = 0.0
+    this.heightStrength = 0.5
+    this.widthStrength = 0.5
 
     this.start()
   }
@@ -36,31 +37,27 @@ export class LeapManager {
 
   processFrame() {
     if (!_.isEmpty(this.currentFrame) && !_.isEmpty(this.currentFrame.handsMap)) {
+
+      // get first hand
       let handsMap = this.currentFrame.handsMap
       let hand = handsMap[Object.keys(handsMap)[0]]
 
       // grab strength
       this.grabStrength = hand.grabStrength
-      //console.log('process frame', hand.grabStrength)
 
-      // sphere radius
-      //console.log(hand.sphereRadius)
-
-
-      // jazz hands
-      // https://developer.leapmotion.com/getting-started/javascript/developer-guide
-      //this.jazzStrength = hand.scaleFactor(this.previousFrame)
-      //console.log(this.jazzStrength)
-
-      //this.rollStrength = clamp(-1 * hand.roll() / Math.PI, 0, 1)
-      //console.log(this.rollStrength)
+      // roll strength
       this.rollStrength = hand.roll()
 
-      let MIN_DISTANCE = 75
-      let MAX_DISTANCE = 175
-      this.heightStrength = clamp((hand.stabilizedPalmPosition[1] - MIN_DISTANCE) / MAX_DISTANCE, 0, 1)
-      //console.log(this.heightStrength)
+      // height strength
+      let MIN_HEIGHT_DISTANCE = 75
+      let MAX_HEIGHT_DISTANCE = 175
+      this.heightStrength = clamp((hand.stabilizedPalmPosition[1] - MIN_HEIGHT_DISTANCE) / MAX_HEIGHT_DISTANCE, 0, 1)
 
+      // width strength
+      let MAX_WIDTH_DISTANCE = 150
+      this.widthStrength = clamp(hand.stabilizedPalmPosition[0] / MAX_WIDTH_DISTANCE, -1, 1)
+
+      // cache previous frame
       this.previousFrame = this.currentFrame
     }
 

@@ -10,6 +10,7 @@ body {
 body {
   //background: #000 url('../img/01.gif') repeat;
   //background-size: 75%;
+  background-color: #000;
 }
 
 @font-face {
@@ -22,13 +23,16 @@ body {
   src: url('../fonts/RomanaBT-Bold.woff');
 }
 
+.container {
+  position:absolute;
+}
 
 .title {
   color: #fff;
   font-family: romana;
   font-size: 78px;
-  right: 5%;
   position: absolute;
+  right: 5%;
   top: 50%;
   white-space: nowrap;
 }
@@ -46,7 +50,7 @@ body {
 
 @keyframes scale {
   0% { transform: scale(1.05, 1.05); }
-  100% { transform: scale(0.95, 0.95); }
+  100% { transform: scale(.95, .95); }
 }
 
 @keyframes roll {
@@ -57,6 +61,11 @@ body {
 @keyframes v-move {
   0% { transform: translateY(5px); }
   100% { transform: translateY(-5px); }
+}
+
+@keyframes h-move {
+  0% { transform: translateX(5px); }
+  100% { transform: translateX(-5px); }
 }
 
 .instruction {
@@ -74,7 +83,6 @@ body {
   }
 
   .word {
-    left: 0;
     left: 50%;
     position: absolute;
     top: 50%;
@@ -108,6 +116,16 @@ body {
 
     .wrapper {
       animation: v-move .3s linear infinite alternate;
+    }
+  }
+
+  &.h-move {
+    left: 50%;
+    top: 50%;
+    transform: translateY(-50%) translateX(-50%);
+
+    .wrapper {
+      animation: h-move .3s linear infinite alternate;
     }
   }
 }

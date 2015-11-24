@@ -10,8 +10,8 @@ import vertexShader from '../shaders/horizontal-marching-stripes.vert!text'
 import fragmentShader from '../shaders/horizontal-marching-stripes.frag!text'
 
 export class GrabScene extends InteractionScene {
-  constructor($instruction, scene, clock, leapManager) {
-    super($instruction, scene, clock, leapManager)
+  constructor(screen, scene, clock, $instruction, leapManager) {
+    super(screen, scene, clock, $instruction, leapManager)
 
     this.MIN_SCALE = 0.025
     this.MAX_SCALE = 1.00

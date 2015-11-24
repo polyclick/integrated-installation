@@ -7,7 +7,8 @@ import vertexShader from '../shaders/screensaver.vert!text'
 import fragmentShader from '../shaders/screensaver.frag!text'
 
 export class ScreenSaver {
-  constructor(scene, clock) {
+  constructor(screen, scene, clock) {
+    this.screen = screen
     this.scene = scene
     this.clock = clock
 
@@ -15,7 +16,7 @@ export class ScreenSaver {
     let material = new THREE.ShaderMaterial({
       uniforms: {
         u_time: { type: 'f', value: 1.0 },
-        u_resolution: { type: 'v2', value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+        u_resolution: { type: 'v2', value: new THREE.Vector2(this.screen.w, this.screen.h) },
         u_mode: { type: '1i', value: 0 },
         u_amount: { type: 'f', value: 20.0 },
         u_speed: { type: 'f', value: 10.0 },
@@ -29,7 +30,7 @@ export class ScreenSaver {
 
     this.modes = [0, 1]
     this.previousMode = null
-    this.showing = false;
+    this.showing = false
 
     this.queueNextMode()
   }
@@ -61,7 +62,7 @@ export class ScreenSaver {
 
     // if rotate was picked, resize sometimes
     let shouldResize = shouldRotate && parseInt(Math.round(Math.random()), 10)
-    let scalefactor = shouldResize ? window.innerHeight / window.innerWidth : 1.0
+    let scalefactor = shouldResize ? this.screen.h / this.screen.w : 1.0
     this.mesh.scale.set(scalefactor, scalefactor, scalefactor)
 
     // set uniforms

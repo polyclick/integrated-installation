@@ -26,20 +26,20 @@ void main() {
     if(u_mode == 0) {
       y = sign(sin(st.x * u_amount + movement));
 
-      if(u_mask == 1) {
-        vec2 ss = gl_FragCoord.xy / u_resolution.xy;
-        y = sign(sin(st.x * u_amount)) * step(ss.x, tan(u_time * 5.0));
-      }
+      // if(u_mask == 1) {
+      //   vec2 ss = gl_FragCoord.xy / u_resolution.xy;
+      //   y = sign(sin(st.x * u_amount)) * step(ss.x, tan(u_time * 5.0));
+      // }
     }
 
     // horizontal
     if(u_mode == 1) {
       y = sign(sin(st.y * u_amount + movement));
 
-      if(u_mask == 1) {
-        vec2 ss = gl_FragCoord.xy / u_resolution.xy;
-        y = sign(sin(st.y * u_amount)) * step(ss.y, tan(u_time * 5.0));
-      }
+      // if(u_mask == 1) {
+      //   vec2 ss = gl_FragCoord.xy / u_resolution.xy;
+      //   y = sign(sin(st.y * u_amount)) * step(ss.y, tan(u_time * 5.0));
+      // }
     }
 
     gl_FragColor = vec4(vec3(y), 1.0);

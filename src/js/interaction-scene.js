@@ -5,10 +5,11 @@ import TweenMax from 'gsap'
 import _ from 'lodash'
 
 export class InteractionScene {
-  constructor($instruction, scene, clock, leapManager) {
-    this.$instruction = $instruction
+  constructor(screen, scene, clock, $instruction, leapManager) {
+    this.screen = screen
     this.scene = scene
     this.clock = clock
+    this.$instruction = $instruction
     this.leapManager = leapManager
 
     this.TEASE_TIMEOUT = 1000
@@ -51,7 +52,7 @@ export class InteractionScene {
     // all shaders automatically get time and resolution uniforms
     let uniforms = {
       u_time: { type: 'f', value: 1.0 },
-      u_resolution: { type: 'v2', value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+      u_resolution: { type: 'v2', value: new THREE.Vector2(this.screen.w, this.screen.h) }
     }
 
     // merged with uniforms in shader object

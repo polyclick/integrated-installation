@@ -5,13 +5,14 @@ import TweenMax from 'gsap'
 import _ from 'lodash'
 
 import {InteractionScene} from './interaction-scene.js'
+import {generatePositionsArray, getRandomPosition} from './position-utils.js'
 
-import vertexShader from '../shaders/circular.vert!text'
-import fragmentShader from '../shaders/circular.frag!text'
+import vertexShader from '../shaders/circular-stripes.vert!text'
+import fragmentShader from '../shaders/circular-stripes.frag!text'
 
 export class SpinScene extends InteractionScene {
-  constructor($instruction, scene, clock, leapManager) {
-    super($instruction, scene, clock, leapManager)
+  constructor(screen, scene, clock, $instruction, leapManager) {
+    super(screen, scene, clock, $instruction, leapManager)
 
     // contra movement triangle count
     this.CONTRA_AMOUNT = 3
@@ -38,12 +39,12 @@ export class SpinScene extends InteractionScene {
     // IMPORTANT: width and height is not screen width and height but width and height in 3D space
     // todo: cast a ray to detect min/max x/y from the 2d screen canvas onto the 3d world
     // currently just using an approximation
-    let boundingBox = {w: window.innerWidth / 2, h: window.innerHeight / 2}
-    let positions = this.generatePositionsArray(boundingBox.w, boundingBox.h, 35, 0)
+    let boundingBox = {w: this.screen.w / 2, h: this.screen.h / 2}
+    let positions = generatePositionsArray(boundingBox.w, boundingBox.h, 35, 0)
 
     // position them randomly but distributed somewhat evenly
     _.each(this.meshes, (mesh) => {
-      let pos = this.getRandomPosition(positions, true)
+      let pos = getRandomPosition(positions, true)
       mesh.position.x = pos.x - (boundingBox.w / 2)
       mesh.position.y = pos.y - (boundingBox.h / 2)
     })
@@ -81,59 +82,5 @@ export class SpinScene extends InteractionScene {
     geometry.computeFaceNormals()
 
     return geometry
-  }
-
-  // Returns a random integer between min (included) and max (excluded)
-  // Using Math.round() will give you a non-uniform distribution!
-  getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min
-  }
-
-  // generate random positions
-  generatePositionsArray(maxX, maxY, safeRadius, irregularity) {
-    let positionsArray = []
-    let r, c
-    let rows
-    let columns
-
-    // count the amount of rows and columns
-    rows = Math.floor(maxY / safeRadius)
-    columns = Math.floor(maxX / safeRadius)
-
-    // loop through rows
-    for (r = 1; r <= rows; r += 1) {
-      // loop through columns
-      for (c = 1; c <= columns; c += 1) {
-        positionsArray.push({
-          x: Math.round(maxX * c / columns) + this.getRandomInt(irregularity * -1, irregularity),
-          y: Math.round(maxY * r / rows) + this.getRandomInt(irregularity * -1, irregularity)
-        })
-      }
-    }
-
-    // return array
-    return positionsArray
-  }
-
-  // get random position from positions array
-  getRandomPosition(array, removeTaken) {
-    let randomIndex
-    let coordinates
-
-    // get random index
-    randomIndex = this.getRandomInt(0, array.length - 1)
-
-    // get random item from array
-    coordinates = array[randomIndex]
-
-    // check if remove taken
-    if (removeTaken) {
-
-      // remove element from array
-      array.splice(randomIndex, 1)
-    }
-
-    // return position
-    return coordinates
   }
 }

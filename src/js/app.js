@@ -11,18 +11,20 @@ import {LeapManager} from './leap-manager.js'
 import {GrabScene} from './grab-scene.js'
 import {BounceScene} from './bounce-scene.js'
 import {SpinScene} from './spin-scene.js'
+import {StrafeScene} from './strafe-scene.js'
 import {ScreenSaver} from './screen-saver.js'
-
-//
-//  More shaders with black/white
-//    https://www.shadertoy.com/view/llsSzH
-//
-//
-//
 
 class App {
   constructor() {
-    this.IDLE_TIMEOUT = 1500
+    this.SHOULD_FILL_SCREEN = true
+    this.WIDTH = 1000
+    this.HEIGHT = 1000
+    this.TOP = 100
+    this.LEFT = 100
+
+    this.IDLE_TIMEOUT = 1000
+
+    this.screen = { w: 0, h: 0 }
 
     this.renderer = null
     this.camera = null
@@ -38,26 +40,48 @@ class App {
     this.idleTimeout = null
     this.resizeTimeout = null
 
+    this.$container = $('.container')
     this.$title = $('.title')
     this.$blocker = $('.blocker')
     this.$instructionGrab = $('.instruction.grab')
     this.$instructionRoll = $('.instruction.roll')
     this.$instructionVMove = $('.instruction.v-move')
+    this.$instructionHMove = $('.instruction.h-move')
 
     this.init()
     this.logResolutionDetails()
   }
 
   init() {
+    // set screen site
+    if (this.SHOULD_FILL_SCREEN) {
+      this.screen.w = window.innerWidth
+      this.screen.h = window.innerHeight
+    } else {
+      this.screen.w = this.WIDTH
+      this.screen.h = this.HEIGHT
+    }
+
+    // container
+    this.$container
+      .width(this.screen.w)
+      .height(this.screen.h)
+
+    if (!this.SHOULD_FILL_SCREEN) {
+      this.$container.css({
+        top: this.TOP + 'px',
+        left: this.LEFT + 'px'
+      })
+    }
+
     // renderer
-    this.renderer = new THREE.WebGLRenderer({ alpha: false, antialias: true, preserveDrawingBuffer: true })
+    this.renderer = new THREE.WebGLRenderer({ antialias: true })
     this.renderer.setPixelRatio(window.devicePixelRatio)
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
-    // this.renderer.autoClearColor = false;
-    document.body.appendChild(this.renderer.domElement)
+    this.renderer.setSize(this.screen.w, this.screen.h)
+    this.$container.append(this.renderer.domElement)
 
     // camera
-    this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000)
+    this.camera = new THREE.PerspectiveCamera(70, this.screen.w / this.screen.h, 1, 1000)
     this.camera.position.z = 400
 
     // scene
@@ -77,13 +101,14 @@ class App {
 
     // scenes
     this.scenes = [
-      new GrabScene(this.$instructionGrab, this.scene, this.clock, this.leapManager),
-      new BounceScene(this.$instructionVMove, this.scene, this.clock, this.leapManager),
-      new SpinScene(this.$instructionRoll, this.scene, this.clock, this.leapManager)
+      new GrabScene(this.screen, this.scene, this.clock, this.$instructionGrab, this.leapManager),
+      new BounceScene(this.screen, this.scene, this.clock, this.$instructionVMove, this.leapManager),
+      new SpinScene(this.screen, this.scene, this.clock, this.$instructionRoll, this.leapManager),
+      new StrafeScene(this.screen, this.scene, this.clock, this.$instructionHMove, this.leapManager)
     ]
 
     // screensaver scene
-    this.screensaver = new ScreenSaver(this.scene, this.clock)
+    this.screensaver = new ScreenSaver(this.screen, this.scene, this.clock)
     this.screensaver.show()
 
     // blocker
@@ -117,11 +142,11 @@ class App {
     clearTimeout(this.resizeTimeout)
 
     // update camera
-    this.camera.aspect = window.innerWidth / window.innerHeight
+    this.camera.aspect = this.screen.w / this.screen.h
     this.camera.updateProjectionMatrix()
 
     // update renderer
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
+    this.renderer.setSize(this.screen.w, this.screen.h)
 
     // resize timeout
     // automatically reloads page when resizing completes
