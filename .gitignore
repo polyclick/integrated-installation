@@ -65,3 +65,4 @@ Icon
 
 # project specific
 dist
+/.vscode
